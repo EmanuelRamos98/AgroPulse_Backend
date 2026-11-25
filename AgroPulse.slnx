@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="AgroPulse.Abstractions/AgroPulse.Abstractions.csproj" />
+  <Project Path="AgroPulse.Backend/AgroPulse.Backend.csproj" />
+  <Project Path="AgroPulse.Core/AgroPulse.Core.csproj" />
+  <Project Path="AgroPulse.Data/AgroPulse.Data.csproj" />
+</Solution>
