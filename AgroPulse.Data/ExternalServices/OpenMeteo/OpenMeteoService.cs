@@ -31,7 +31,7 @@ namespace AgroPulse.Data.ExternalServices.OpenMeteo
             string url = $"v1/forecast?latitude={latStr}&longitude={lonStr}" +
                             "&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation,wind_speed_10m,wind_gusts_10m,soil_temperature_6cm,soil_moisture_3_to_9cm" +
                             "&daily=et0_fao_evapotranspiration,precipitation_sum,temperature_2m_min,temperature_2m_max" +
-                            "&timezone=America%2FArgentina%2FBuenos_Aires&past_days=5&forecast_days=5";
+                            "&timezone=America%2FArgentina%2FBuenos_Aires&past_days=30&forecast_days=5";
 
             try {
                 var rawResponse = await _httpClient.GetFromJsonAsync<OpenMeteoResponse>(url);

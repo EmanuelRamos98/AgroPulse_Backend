@@ -1,15 +1,22 @@
 ﻿using AgroPulse.Abstractions.DTOs.RainRecords;
 using AgroPulse.Abstractions.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace AgroPulse.Backend.Controllers
 {
-    [Route("api/lots/{lotId:int}/rain-records")]
+    [Authorize]
     [ApiController]
+    [Route("api/lots/{lotId:int}/rain-records")]
     public class RainRecordsController(IRainRecordService _rainService) : ControllerBase
     {
-        private int GetCurrentUserId() => 1;
+        private int GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.Parse(userIdClaim!);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetSummary(int lotId)
@@ -23,17 +30,10 @@ namespace AgroPulse.Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> AddManualRecord(int lotId, [FromBody] CreateRainRecordDto dto)
         {
-            try
-            {
                 var created = await _rainService.AddManualRainAsync(lotId, GetCurrentUserId(), dto);
                 if (created == null) return NotFound(new { message = "Lote no encontrado." });
 
                 return Ok(created);
-            }
-            catch (ArgumentException _ex)
-            {
-                return BadRequest(new { message = _ex.Message });
-            }
         }
 
         [HttpDelete("{recordId:int}")]

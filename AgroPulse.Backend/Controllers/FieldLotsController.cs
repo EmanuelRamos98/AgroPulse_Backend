@@ -1,16 +1,23 @@
 ﻿using AgroPulse.Abstractions.DTOs.Lost;
 using AgroPulse.Abstractions.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace AgroPulse.Backend.Controllers
 {
-    [Route("api/lots")]
+    [Authorize]
     [ApiController]
+    [Route("api/lots")]
     public class FieldLotsController(IFieldLotService _lotServices, IAgroAnalyticsService _analyticsService) : ControllerBase
     {
         //Temporal
-        private int GetCurrentUserId() => 1;
+        private int GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.Parse(userIdClaim!);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -43,31 +50,17 @@ namespace AgroPulse.Backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] SaveFieldLotDto dto)
         {
-            try 
-            { 
                 var created = await _lotServices.CreateLotAsync(GetCurrentUserId(), dto);
                 return CreatedAtAction(nameof(GetById), new {id=created.Id}, created);
-            }
-            catch(ArgumentException _ex)
-            {
-                return BadRequest(new {message= _ex.Message});
-            }
         }
 
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] SaveFieldLotDto dto)
         {
-            try
-            {
                 var updated = await _lotServices.UpdateLotAsync(id, GetCurrentUserId(), dto);
                 if (!updated) return NotFound(new { message = "Lote no encontrado." });
 
                 return NoContent();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
         }
 
         [HttpDelete("{id:int}")]
